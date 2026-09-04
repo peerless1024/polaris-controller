@@ -8,6 +8,8 @@ jobs:
   release:
     name: Release polaris
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       matrix:
         goos: [linux]
@@ -15,16 +17,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
 
       - name: Get version
         id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v6
         with:
-          go-version: "1.21"
+          go-version: "1.26.x"
 
       - name: Build
         id: build
@@ -35,27 +37,12 @@ jobs:
         run: |
           echo "version is $VERSION"
           bash build.sh $VERSION
-          PACKAGE_NAME=$(ls polaris-controller-release*.zip | sed -n '1p')
-          echo ::set-output name=name::${PACKAGE_NAME}
-          PACKAGE_NAME=$(ls polaris-controller-release*.zip | sed -n '2p')
-          echo ::set-output name=name1::${PACKAGE_NAME}
+          echo "name=$(ls polaris-controller-release*.zip | sed -n '1p')" >> "$GITHUB_OUTPUT"
+          echo "name1=$(ls polaris-controller-release*.zip | sed -n '2p')" >> "$GITHUB_OUTPUT"
 
       - name: Upload asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./${{ steps.build.outputs.name }}
-          asset_name: ${{ steps.build.outputs.name }}
-          asset_content_type: application/gzip
-
-      - name: Upload asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./${{ steps.build.outputs.name1 }}
-          asset_name: ${{ steps.build.outputs.name1 }}
-          asset_content_type: application/gzip
+          files: |
+            ./${{ steps.build.outputs.name }}
+            ./${{ steps.build.outputs.name1 }}

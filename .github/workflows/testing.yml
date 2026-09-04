@@ -11,20 +11,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v6
       with:
-        go-version: "1.21"
+        go-version: "1.26.x"
 
-    - name: Build polairs-controller
-      run: make build
+    - name: Build polaris-controller
+      run: make build-amd64
 
     - name: Test
       run: go mod vendor && go test  -timeout 80m ./... -v -covermode=count -coverprofile=coverage_1.cover
 
     - name: Upload Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
