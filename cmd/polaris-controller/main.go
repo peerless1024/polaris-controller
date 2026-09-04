@@ -21,7 +21,6 @@ import (
 	"os"
 	"time"
 
-	_ "go.uber.org/automaxprocs"
 	"k8s.io/component-base/logs"
 
 	"github.com/polarismesh/polaris-controller/cmd/polaris-controller/app"
