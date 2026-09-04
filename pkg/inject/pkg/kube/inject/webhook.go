@@ -536,9 +536,9 @@ func createPatch(opt *PatchOptions) ([]byte, error) {
 // Retain deprecated hardcoded container and volumes names to aid in
 // backwards compatible migration to the new SidecarInjectionStatus.
 var (
-	legacyInitContainerNames = []corev1.Container{corev1.Container{Name: "istio-init"}, corev1.Container{Name: "enable-core-dump"}}
-	legacyContainerNames     = []corev1.Container{corev1.Container{Name: ProxyContainerName}}
-	legacyVolumeNames        = []corev1.Volume{corev1.Volume{Name: "polaris-certs"}, corev1.Volume{Name: "polaris-envoy"}}
+	legacyInitContainerNames = []corev1.Container{{Name: "istio-init"}, {Name: "enable-core-dump"}}
+	legacyContainerNames     = []corev1.Container{{Name: ProxyContainerName}}
+	legacyVolumeNames        = []corev1.Volume{{Name: "polaris-certs"}, {Name: "polaris-envoy"}}
 )
 
 func injectionStatus(pod *corev1.Pod) *SidecarInjectionStatus {
