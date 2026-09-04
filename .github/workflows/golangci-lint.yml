@@ -29,15 +29,18 @@ jobs:
   golangci:
     strategy:
       matrix:
-        go-version: [ "1.21" ]
+        go-version: [ "1.26.x", "1.27.x" ]
     name: golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-go@v3
-      - uses: actions/checkout@v3
-      - name: golangci-lint
-        uses: golangci/golangci-lint-action@v3.6.0
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
         with:
-          # Required: the version of golangci-lint is required and must be specified without patch version: we always use the latest patch version.
-          version: latest
+          go-version: ${{ matrix.go-version }}
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          # golangci-lint 只支持不高于编译它自身的 Go 版本，不要使用 latest，
+          # 升级 Go 时需同步确认所选版本的 built with 版本。
+          version: v2.11.4
           args: --timeout=30m
